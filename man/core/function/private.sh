@@ -116,21 +116,23 @@ PAD="  "
 # * directory: Module directory
 #
 _rerun_module_summary() {
-    (( $# != 1 )) && {
+    (( $# != 1 && $# != 2 )) && {
         rerun_die "wrong # args: should be: _rerun_module_summary module_dir"
     }
     local -r module_dir=$1
+    local -r module_name_path=$2
     local module_name module_desc module_vers
-    if rerun_module_exists "$(basename "$module_dir")"
+    if rerun_module_exists "$(basename "$module_dir")" 0
     then
-        module_name=$(basename "$module_dir")
+        module_name=$([ -n "$module_name_path" ] && echo $module_name_path || basename "$module_dir")
         module_desc=$(rerun_property_get "$module_dir" DESCRIPTION)
         module_vers=$(rerun_property_get "$module_dir" VERSION) || module_vers=""
-        printf "%s%s: \"%s\" - %s (%s)\n" "${PAD:-}" \
-            "$(rerun_color yellow "$module_name")" \
-            "$(rerun_color bold "${module_desc}")" \
+        printf "%s%s  (v%s)  \n   %s%s\n" \
+            "$(rerun_color green "$module_name")" \
+            "$module_desc" \
             "$module_vers" \
-            "$module_dir"
+            "${PAD:-}" \
+            "$(rerun_color cyan "$module_dir")"
     fi
 }
 
@@ -150,7 +152,7 @@ _rerun_modules_summary() {
     (( $# != 1 )) && {
         rerun_die "wrong # args: should be: _rerun_modules_summary directory"
     }
-    printf "%s\n" "$(rerun_color blue "Available modules:")"
+    printf "%s\n" "$(rerun_color yellow "Available modules:")"
 
     shopt -s nullglob # enable
     set +u
@@ -159,12 +161,17 @@ _rerun_modules_summary() {
         for module in $directory/*
         do
             [[ -f "$module/metadata" ]] && _rerun_module_summary "$module"
+            for module_sub in $module/*
+            do
+                module_name_path=${module_sub#$directory/}
+                [[ -f "$module_sub/metadata" ]] && _rerun_module_summary "$module_sub" "$module_name_path"
+            done
         done
         if [[ ${RERUN_LOCATION:-} = "${RERUN_DEFAULT_BINDIR}"
                 && $path_element != "${RERUN_DEFAULT_LIBDIR}/rerun/modules" ]]
         then
             echo
-            printf "%s\n" "$(rerun_color blue "Available modules in \"${RERUN_DEFAULT_LIBDIR}/rerun/modules\":")"
+            printf "%s\n" "$(rerun_color yellow "Available modules in \"${RERUN_DEFAULT_LIBDIR}/rerun/modules\":")"
             for module in ${RERUN_DEFAULT_LIBDIR}/rerun/modules/*
             do
                [[ -f "$module/metadata" ]] && _rerun_module_summary "$module"
@@ -183,10 +190,10 @@ _rerun_commands_summary() {
         rerun_die "wrong # args: should be: _rerun_commands_summary directory module"
     }
     local -r directory=$1
-    local -r module=$2
+    local module=$2
 
     local -r module_dir=$(rerun_module_exists "$module") || rerun_syntax_error "module not found: \"$module\""
-    printf "%s\n" "$(rerun_color blue "Available commands in module, \"$module\":")"
+    printf "%s\n" "$(rerun_color yellow "Available commands in module, \"$module\":")"
     shopt -s nullglob # enable
     local cmd_name metadata
     for cmd in $module_dir/commands/*/metadata
@@ -194,11 +201,12 @@ _rerun_commands_summary() {
         cmd_name=$(basename "$(dirname "$cmd")")
         metadata=$module_dir/commands/${cmd_name}/metadata
         [[ -f "$metadata" ]] && cmd_desc=$(rerun_property_get "$(dirname "$cmd")" DESCRIPTION)
-        printf "%s\n" "$(rerun_color bold "${cmd_name}: \"${cmd_desc}\"")"
+        printf "%s\n" "$(rerun_color green "${cmd_name}: \"${cmd_desc}\"")"
         if [[ -d "$module_dir/commands/${cmd_name}" ]]
         then
             #
             # List the command options
+            local module=${module##*/}
             local -a options=( $(rerun_options "$(dirname "$module_dir")" "$module" "$cmd_name") )
             [[ -z "${options:-}" ]] && continue
             for opt in "${options[@]}"

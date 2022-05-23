@@ -938,16 +938,17 @@ d
 # * Give precedence to finding the module in $RERUN_MODULES.
 # * If running an installed version of Rerun check the system location for the module:
 rerun_module_exists() {
-    (( $# != 1 )) && {
+    (( $# != 1 && $# != 2 )) && {
         rerun_die 'wrong # args: should be: rerun_module_exists module'
     }
     local -r module="$1"
+    local -r has_echo=${2-1}
 
     for path_element in $(rerun_module_path_elements "$RERUN_MODULES")
     do
         if [[ -f "$path_element/$module/metadata" ]]
         then
-           echo "$path_element/$module"
+           [ $has_echo -eq 1 ] && echo "$path_element/$module"
            return 0
         fi
     done
@@ -955,11 +956,11 @@ rerun_module_exists() {
     if [[ "${RERUN_LOCATION:-}" = "${RERUN_DEFAULT_BINDIR}" \
         && -f "${RERUN_DEFAULT_LIBDIR}/rerun/modules/$module/metadata" ]]
     then
-       echo "${RERUN_DEFAULT_LIBDIR}/rerun/modules/$module"
+       [ $has_echo -eq 1 ] && echo "${RERUN_DEFAULT_LIBDIR}/rerun/modules/$module"
        return 0
     fi
 
-    echo ""
+    [ $has_echo -eq 1 ] && echo ""
     return 1
 }
 
