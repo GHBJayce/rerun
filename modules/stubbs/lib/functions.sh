@@ -455,6 +455,16 @@ generate_command_script() {
   fi
 }
 
+generate_command_script_main() {
+  local -r overwrite=$1 cmd_script_main=$2
+  # Generate a boiler plate implementation
+  if [[ ! -f "${cmd_script_main}" ]] || [[ "${overwrite:-}" == "true" ]]; then
+    cat - > "$cmd_script_main"
+    chmod +x "${cmd_script_main}" || rerun_die "Failed setting execute bit on command main.sh."
+    rerun_log info "Wrote command main.sh: $cmd_script_main"
+  fi
+}
+
 generate_command_metadata() {
   local -r cmd=$1 description=$2 generate_help=$3 overwrite=$4 metadata=$5
   if [[ ! -f "$metadata" || "${overwrite:-}" == "true" ]]; then

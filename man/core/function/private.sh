@@ -127,7 +127,7 @@ _rerun_module_summary() {
         module_name=$([ -n "$module_name_path" ] && echo $module_name_path || basename "$module_dir")
         module_desc=$(rerun_property_get "$module_dir" DESCRIPTION)
         module_vers=$(rerun_property_get "$module_dir" VERSION) || module_vers=""
-        printf "%s%s  (v%s)  \n   %s%s\n" \
+        printf "%s\"%s\"  (%s)  \n   %s%s\n" \
             "$(rerun_color green "$module_name")" \
             "$module_desc" \
             "$module_vers" \
@@ -201,7 +201,7 @@ _rerun_commands_summary() {
         cmd_name=$(basename "$(dirname "$cmd")")
         metadata=$module_dir/commands/${cmd_name}/metadata
         [[ -f "$metadata" ]] && cmd_desc=$(rerun_property_get "$(dirname "$cmd")" DESCRIPTION)
-        printf "%s\n" "$(rerun_color green "${cmd_name}: \"${cmd_desc}\"")"
+        printf "%s%s\n" "$(rerun_color green "${cmd_name}")" "\"${cmd_desc}\""
         if [[ -d "$module_dir/commands/${cmd_name}" ]]
         then
             #

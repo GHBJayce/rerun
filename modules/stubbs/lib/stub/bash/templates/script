@@ -20,6 +20,10 @@ rerun_options_parse "$@"
 # Put the command implementation here.
 # - - -
 
+. "$RERUN_MODULE_DIR/commands/@COMMAND@/main.sh" || {
+  echo >&2 "Failed loading main.sh file." ; exit 1 ;
+}
+
 # Done. Exit with last command exit status.
 exit $?
 
