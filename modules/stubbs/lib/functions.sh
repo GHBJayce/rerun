@@ -447,7 +447,7 @@ generate_command_script() {
   # Generate a boiler plate implementation
   if [[ ! -f "${cmd_script}" ]] || [[ "${overwrite:-}" == "true" ]]; then
     cat - | sed -e "s/@COMMAND@/$cmd/g" \
-        -e "s/@MODULE@/$module/g" \
+        -e "s/@MODULE@/${module//\//\\/}/g" \
         -e "s^@DESCRIPTION@^$description^g" \
         -e "s/@VARIABLES@/$vars/g" > "$cmd_script"
     chmod +x "${cmd_script}" || rerun_die "Failed setting execute bit on command script."        
@@ -513,7 +513,7 @@ generate_command_test() {
   mkdir -p "$test_dir" || rerun_die "failed creating tests directory"
 
   if [[ ! -f "$testsuite" || "${overwrite:-}" == "true" ]]; then
-    cat - | sed -e "s/@MODULE@/$module/g" \
+    cat - | sed -e "s/@MODULE@/${module//\//\\/}/g" \
         -e "s/@COMMAND@/$cmd/g" \
         -e "s;@RERUN@;${RERUN};g" \
         -e "s;@RERUN_MODULES@;${RERUN_MODULES};g" \
@@ -522,7 +522,7 @@ generate_command_test() {
   fi
 
   if [[ ! -f "$test_functions" || "${overwrite:-}" == "true" ]]; then
-      sed -e "s/@MODULE@/$module/g" \
+      sed -e "s/@MODULE@/${module//\//\\/}/g" \
          "$test_functions" > "$test_dir/functions.sh" || rerun_die "Failed generating test functions library."
       rerun_log info "Wrote test function library: $test_dir/functions.sh"
   fi
@@ -556,7 +556,7 @@ generate_module_library() {
     local -r module_dir=$1 module=$2 description=$3 template=$4
     local -r functions="$module_dir/lib/$(basename "$template")" 
     [[ ! -d "$module_dir/lib" ]] && rerun_die "Lib dir does not exist: $module_dir/lib"
-    sed -e "s/@MODULE@/$module/g" \
+    sed -e "s/@MODULE@/${module//\//\\/}/g" \
         -e "s^@DESCRIPTION@^$description^g" \
         -e "s,@SHELL@,$COMMAND_SHELL,g" > "$functions" < "$template"
 }
