@@ -116,7 +116,7 @@ stubbs_options_matching() {
     local predicates=( $@ )
 
     local options=()
-    for option in $(rerun_options $(dirname $moddir) $module $command)
+    for option in $(rerun_options ${moddir/$module/} $module $command)
     do
         for predicate in ${predicates[*]}
         do
@@ -497,7 +497,7 @@ generate_options_parser() {
       rerun_die "required metadata not found: OPTIONS_SCRIPT"
     }
     "$stub/$OPTIONS_GENERATOR" \
-      "$(dirname "$RERUN_MODULE_HOME_DIR")" "$module" "$cmd" > "$options_parser_script" || {
+      "${RERUN_MODULE_HOME_DIR/\/${module}/}" "$module" "$cmd" > "$options_parser_script" || {
       rerun_die "Failed generating options parser."
     }
     rerun_log info "Wrote options parser: $options_parser_script"

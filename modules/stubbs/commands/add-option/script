@@ -128,7 +128,7 @@ do
   }
   options_parser=$RERUN_MODULE_HOME_DIR/commands/$cmd/$OPTIONS_SCRIPT
   "$RERUN_MODULE_DIR/lib/stub/bash/$OPTIONS_GENERATOR" \
-      $(dirname "$RERUN_MODULE_HOME_DIR") "$MODULE" "$cmd" > "$options_parser" || {
+      "${RERUN_MODULE_HOME_DIR/$MODULE/}" "$MODULE" "$cmd" > "$options_parser" || {
       rerun_die "Failed generating options parser."
   }
   rerun_log info "Generated options parser: $options_parser"
