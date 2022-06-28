@@ -1048,6 +1048,17 @@ rerun_command_execute() {
 # - - -
 #
 
+rerun_include_dir_sh() {
+    (( $# != 1 )) && {
+        rerun_die 'wrong # args: should be: rerun_include_dir_sh path'
+    }
+    local path=${1}
+    userFuncFileList=$(ls $path | grep '.sh')
+    for userFuncFileName in ${userFuncFileList[@]}; do
+        . "${path}/${userFuncFileName}"
+    done
+}
+
 #
 #
 #  _- End public function library_.
