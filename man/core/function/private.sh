@@ -122,7 +122,7 @@ _rerun_module_summary() {
     local -r module_dir=$1
     local -r module_name_path=$2
     local module_name module_desc module_vers
-    if rerun_module_exists "$(basename "$module_dir")" 0
+    if rerun_module_exists "$([ -n "$module_name_path" ] && echo $module_name_path || basename "$module_dir")" 0
     then
         module_name=$([ -n "$module_name_path" ] && echo $module_name_path || basename "$module_dir")
         module_desc=$(rerun_property_get "$module_dir" DESCRIPTION)
