@@ -35,7 +35,7 @@ generate_option_parser() {
   else
     argstring=$(printf " --%s" "${optName}" )
   fi
-  
+
   if [ "$optArguments" == "false" ]; then
     # boolean flag. Check if the arg is "true" because the answers population process declares it.
     #   if so, shift an extra time
@@ -94,8 +94,16 @@ print_help_option=$(stubbs_command_property "$moddir/$module" "$command" GENERAT
 # * The "-?" help argument prints command usage and will exit 2.
 # * Return 0 for successful option parse.
 #
+rerun_check_include_common_function() {
+    common_dir=\$(dirname \$RERUN_MODULE_DIR)
+    common_function_dir="\${common_dir}/common/function"
+    if [ -d \$common_function_dir ]; then
+        rerun_include_dir_sh \$common_function_dir
+    fi
+    return 0
+}
 rerun_options_parse() {
-  
+
     unrecognized_args=()
 
     while (( "\$#" > 0 ))

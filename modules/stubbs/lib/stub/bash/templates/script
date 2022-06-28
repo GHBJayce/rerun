@@ -5,11 +5,13 @@
 #/ rerun-variables: RERUN, RERUN_VERSION, RERUN_MODULES, RERUN_MODULE_DIR
 #/ option-variables: @VARIABLES@
 
-. "$RERUN_MODULE_DIR/lib/functions.sh" "@COMMAND@" || { 
-  echo >&2 "Failed loading function library." ; exit 1 ; 
+. "$RERUN_MODULE_DIR/lib/functions.sh" "@COMMAND@" || {
+  echo >&2 "Failed loading function library." ; exit 1 ;
 }
 
 set -o errexit -o nounset -o pipefail
+
+rerun_check_include_common_function
 
 rerun_options_parse "$@"
 
