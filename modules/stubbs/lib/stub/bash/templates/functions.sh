@@ -8,12 +8,14 @@
     return 1
 }
 
+rerun_check_include_common_function
+
 # Check usage. Argument should be command name.
 [[ $# = 1 ]] || rerun_option_usage
 
 # Source the option parser script.
 #
-if [[ -r "$RERUN_MODULE_DIR/commands/$1/options.sh" ]] 
+if [[ -r "$RERUN_MODULE_DIR/commands/$1/options.sh" ]]
 then
     . "$RERUN_MODULE_DIR/commands/$1/options.sh" || {
         rerun_die "Failed loading options parser."

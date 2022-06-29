@@ -11,8 +11,6 @@
 
 set -o errexit -o nounset -o pipefail
 
-rerun_check_include_common_function
-
 rerun_options_parse "$@"
 
 # Command implementation

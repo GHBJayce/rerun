@@ -1059,6 +1059,15 @@ rerun_include_dir_sh() {
     done
 }
 
+rerun_check_include_common_function() {
+    common_dir=$(dirname $RERUN_MODULE_DIR)
+    common_function_dir="${common_dir}/common/function"
+    if [ -d $common_function_dir ]; then
+        rerun_include_dir_sh $common_function_dir
+    fi
+    return 0
+}
+
 #
 #
 #  _- End public function library_.
