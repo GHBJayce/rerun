@@ -1068,6 +1068,35 @@ rerun_check_include_common_function() {
     return 0
 }
 
+rerun_env_get() {
+    (( $# >= 2 )) || {
+        rerun_die 'wrong # args: should be: rerun_env_get path property'
+    }
+    local -r filePath="$1" property="$2" expand="${3:-true}"
+    [[ ! -f ${filePath} ]] && rerun_die "env file path not found: ${filePath}"
+
+    if ! prop=$(grep "^$property=" "${filePath}")
+    then return 2;
+    fi
+
+    if [[ "$expand" == "true" ]]
+    then (set +u; . "${filePath}"; eval echo \$${property:-}; set -u)
+    else echo "${prop#*=}"
+    fi
+
+    return 0
+}
+
+rerun_include_sh() {
+    (( $# != 1 )) && {
+        rerun_die 'wrong # args: should be: rerun_include_sh path'
+    }
+    local -r filePath="$1"
+    . "$filePath" || {
+        echo >&2 "Failed loading ${filePath} file." ; exit 1 ;
+    }
+}
+
 #
 #
 #  _- End public function library_.
