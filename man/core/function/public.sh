@@ -1068,9 +1068,9 @@ rerun_check_include_common_function() {
     return 0
 }
 
-rerun_env_get() {
+rerun_config_get() {
     (( $# >= 2 )) || {
-        rerun_die 'wrong # args: should be: rerun_env_get path property'
+        rerun_die 'wrong # args: should be: rerun_env_get path property ?expand?'
     }
     local -r filePath="$1" property="$2" expand="${3:-true}"
     [[ ! -f ${filePath} ]] && rerun_die "env file path not found: ${filePath}"
@@ -1085,6 +1085,10 @@ rerun_env_get() {
     fi
 
     return 0
+}
+
+rerun_env_get() {
+    rerun_config_get "$1.env" "$2"
 }
 
 rerun_include_sh() {
