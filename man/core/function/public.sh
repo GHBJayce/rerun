@@ -1101,6 +1101,19 @@ rerun_include_sh() {
     }
 }
 
+rerun_print_export_sh() {
+    (( $# != 1 )) && {
+        rerun_die 'wrong # args: should be: rerun_print_export_sh path'
+    }
+    local -r filePath="$1"
+    res=`cat -en "${filePath}" | grep -v '#'`
+    res=`eval echo $res`
+    res=`echo $res | sed 's/\$ [0-9]* /\\n/g'`
+    res=${res#1}
+    res=${res%$}
+    printf '%s\n' "$res"
+}
+
 #
 #
 #  _- End public function library_.
