@@ -1070,10 +1070,10 @@ rerun_check_include_common_function() {
 
 rerun_config_get() {
     (( $# >= 2 )) || {
-        rerun_die 'wrong # args: should be: rerun_env_get path property ?expand?'
+        rerun_die 'wrong # args: should be: rerun_config_get path property ?expand?'
     }
     local -r filePath="$1" property="$2" expand="${3:-true}"
-    [[ ! -f ${filePath} ]] && rerun_die "env file path not found: ${filePath}"
+    [[ ! -f ${filePath} ]] && rerun_die "config file path not found: ${filePath}"
 
     if ! prop=$(grep "^$property=" "${filePath}")
     then return 2;
