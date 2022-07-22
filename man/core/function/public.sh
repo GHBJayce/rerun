@@ -1087,6 +1087,36 @@ rerun_config_get() {
     return 0
 }
 
+rerun_config_set() {
+    (( $# < 2 )) && {
+        rerun_die 'wrong # args: should be: rerun_config_set filePath property=value ?property=value?'
+    }
+    local -r filePath=$1
+    local -a sed_patts=()
+    shift ;
+    while (( "$#" > 0 ))
+    do
+        local property=${1%=*} value=${1#*=} pattern
+
+        if grep "^$property=" "$filePath" >/dev/null
+        then
+            pattern=$(printf -- "-e s,%s=.*,%s=\"%s\"," "$property" "$property" "$value")
+            [[ -z "${sed_patts:-}" ]] && sed_patts=( "$pattern" ) || sed_patts=( ${sed_patts[@]} "$pattern" )
+        else
+            echo "$property=\"$value\"" >> "$filePath" || rerun_die "Failed adding property: $property"
+        fi
+        shift; # move to next property=value binding.
+    done
+
+    if (( ${#sed_patts[*]} > 0 ))
+    then
+        sed "${sed_patts[@]}" "$filePath" \
+            > "$filePath.$$" || rerun_die  "Failed updating property data"
+        mv "$filePath.$$" "$filePath" || rerun_die "Failed updating property data"
+    fi
+
+}
+
 rerun_env_get() {
     rerun_config_get "$1.env" "$2"
 }
